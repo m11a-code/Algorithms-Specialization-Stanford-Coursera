@@ -6,10 +6,10 @@ import static java.math.BigInteger.*;
 public class Karatsuba {
 
     /**
-     * @param first
-     * @param second
-     * @return
-     * @throws IllegalArgumentException
+     * @param first  first value to multiply with Karatsuba multiplication.
+     * @param second second value to multiply with Karatsuba multiplication.
+     * @return multiplication result from Karatsuba multiplication.
+     * @throws IllegalArgumentException if either first or second provided value is invalid.
      */
     private static BigInteger karatsuba(BigInteger first, BigInteger second) throws IllegalArgumentException {
         // Check if BigInteger values are negative
@@ -20,27 +20,40 @@ public class Karatsuba {
             throw new IllegalArgumentException("BigInteger value " + second + " cannot be a negative value.");
         }
 
+        // Check if we really even need to use Karatsuba to multiply.
+        // This should be adjusted, but for our needs, this is fine.
         if (first.compareTo(TEN) < 0 || second.compareTo(TEN) < 0) {
             return first.multiply(second);
         }
 
+        // Get the length of the larger of the two numbers.
         String length = getLength(first.max(second));
-        BigInteger power = new BigInteger(length);
-        if (power.mod(TWO).equals(ONE)) {
-            power = power.add(ONE);
+        BigInteger pow = new BigInteger(length);
+
+        // Adjust the power value so that it's even.
+        if (pow.mod(TWO).equals(ONE)) {
+            pow = pow.add(ONE);
         }
 
-        BigInteger val = TEN.pow(power.divide(TWO).intValue());
-        BigInteger a = first.divide(val);
-        BigInteger b = first.mod(val);
-        BigInteger c = second.divide(val);
-        BigInteger d = second.mod(val);
+        // Get the half of the power to use to split the numbers.
+        BigInteger powOverTwo = TEN.pow(pow.divide(TWO).intValue());
+        BigInteger a = first.divide(powOverTwo);
+        BigInteger b = first.mod(powOverTwo);
+        BigInteger c = second.divide(powOverTwo);
+        BigInteger d = second.mod(powOverTwo);
 
+        // Karatsuba's three steps:
+        // (1) Recursively compute ac
         BigInteger ac = karatsuba(a, c);
+        // (2) Recursively compute bd
         BigInteger bd = karatsuba(b, d);
+        // (3) Recursively compute (a+b)(c+d)
         BigInteger abcd = karatsuba(a.add(b), c.add(d));
 
-        return ((ac.multiply(TEN.pow(power.intValue()))).add((((abcd.subtract(ac)).subtract(bd))).multiply(val)).add(bd));
+        // Karatsuba's calculation using Gauss' trick.
+        // Reminder: Gauss' trick is (3) - (1) - (2) = ad + bc
+        // Reminder: Karatsuba's is (10^n)ac + (10^(n/2))(ad + bc) + bd
+        return ((ac.multiply(TEN.pow(pow.intValue()))).add((((abcd.subtract(ac)).subtract(bd))).multiply(powOverTwo)).add(bd));
     }
 
     public static String getLength(BigInteger bigInteger) {
