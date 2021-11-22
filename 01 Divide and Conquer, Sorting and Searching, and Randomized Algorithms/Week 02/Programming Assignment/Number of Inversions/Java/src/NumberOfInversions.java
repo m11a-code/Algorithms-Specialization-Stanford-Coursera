@@ -78,8 +78,6 @@ public class NumberOfInversions {
             }
         }
 
-//        System.out.println(Arrays.toString(arr));
-
         System.out.println("Number of inversions are " + countInversions(arr));
     }
 }
