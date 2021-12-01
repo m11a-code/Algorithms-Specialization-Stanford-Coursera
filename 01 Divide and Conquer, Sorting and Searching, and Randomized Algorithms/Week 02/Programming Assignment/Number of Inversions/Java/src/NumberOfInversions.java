@@ -34,8 +34,9 @@ public class NumberOfInversions {
         // According to Master Method, the running time complexity is O(n log n).
     }
 
-    public static int merge(int[] nums, int[] aux, int left, int mid, int right) {
-        int leftPtr = left, midPtr = mid, auxPtr = left, inversionsCount = 0;
+    public static long merge(int[] nums, int[] aux, int left, int mid, int right) {
+        int leftPtr = left, midPtr = mid, auxPtr = left;
+        long inversionsCount = 0;
 
         // Work through each array and place into sorted order in  aux array while counting inversions.
         while ((leftPtr <= mid - 1) && (midPtr <= right)) {
@@ -57,7 +58,7 @@ public class NumberOfInversions {
             aux[auxPtr++] = nums[leftPtr++];
         }
 
-        // Do thsi for the right array.
+        // Do this for the right array.
         while (midPtr <= right) {
             aux[auxPtr++] = nums[midPtr++];
         }
